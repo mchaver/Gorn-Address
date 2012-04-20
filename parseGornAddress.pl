@@ -52,8 +52,17 @@ sub checkIfParenthesesAreBalanced {
 	
 }
 
-sub findGornAddress {
-	
+sub findGornAddressRecursive {
+	#$_[0] $gornAddress
+	#$_[1] $syntaxTree
+	my @address = split(/\./, $_[0]);
+	my $returnValue = findGornAddressRecursiveHelper(\@address, $_[1]);
+	return $returnValue;
+}
+
+sub findGornAddressRecursiveHelper {
+	#$_[0] $gornAddress
+	#$_[1] $syntaxTree
 	my @address = @{$_[0]};
 	my $sizeOfAddress = @address;
 	my $subTree = $_[1];
@@ -91,7 +100,7 @@ sub findGornAddress {
 					$subTree = $1;
 				}
 				@address = @address[1..$sizeOfAddress-1];
-				my $result = findGornAddress(\@address, $subTree);
+				my $result = findGornAddressRecursiveHelper(\@address, $subTree);
 				return $result;
 			}
 		}
@@ -110,8 +119,10 @@ sub findGornAddress {
 	}
 }
 
-sub findGornAddress2 {
-	my @address = @{$_[0]};
+sub findGornAddressNonRecursive {
+	#$_[0] $gornAddress
+	#$_[1] $syntaxTree
+	my @address = split(/\./, $_[0]);
 	my $sizeOfAddress = @address;
 	my $returnValue = "";
 	my $subTree = $_[1];
@@ -156,32 +167,27 @@ sub findGornAddress2 {
 					$subTree =~ s/\s+$//;
 					
 					#remove first and last parentheses
-					$subTree =~ s/^\(|\)$//g;
+					$subTree =~ s/^$left|$right$//g;
 					
 					last;
 				}
 				$matches++;
 			}
-			
-			
-			
-			#print "node: $node\nchar: $char\nmatches: $matches\nresult: $result\nsubTree: $subTree\n\n";
 		}
 		
 		$addressCounter++;
 		if ($addressCounter == $sizeOfAddress) {
-			print $subTree . "\n";
+			$returnValue = $subTree;
 		}
 	}
 	
-	#return $returnValue;
+	return $returnValue;
 }
 
 checkIfParenthesesAreBalanced($syntaxTree);
 
-my @address = split(/\./, $gornAddress);
-my $test = findGornAddress(\@address, $syntaxTree);
+my $test = findGornAddressRecursive($gornAddress, $syntaxTree);
 print $test . "\n";
-$test = findGornAddress2(\@address, $syntaxTree);
-#print $test . "\n";
+$test = findGornAddressNonRecursive($gornAddress, $syntaxTree);
+print $test . "\n";
 
